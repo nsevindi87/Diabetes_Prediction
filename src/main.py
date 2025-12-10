@@ -2,32 +2,14 @@ import pickle
 import numpy as np
 import pandas as pd
 from flask import Flask, request, jsonify
-import joblib
-import os
 
 app = Flask(__name__)
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+with open("diabetes_model.pkl", "rb") as model_file:
+    model = pickle.load(model_file)
 
-# Modellerin Tam Yolu
-MODEL_PATH = os.path.join(BASE_DIR, "diabetes_model.pkl")
-SCALER_PATH = os.path.join(BASE_DIR, "scaler.pkl")
-
-
-# 1. Modellerin Yüklenmesi (Kesin Yolu Kullanarak)
-try:
-    with open(MODEL_PATH, "rb") as model_file:
-        model = joblib.load(model_file)
-
-    with open(SCALER_PATH, "rb") as scaler_file:
-        scaler = joblib.load(scaler_file)
-        
-    print("Modeller başarıyla yüklendi.")
-    
-except Exception as e:
-    # Hata durumunda hangi yollara baktığını yazdıralım
-    print(f"HATA: Model yüklenemedi. Kontrol edilen yol: {MODEL_PATH}")
-    print(f"Detay: {e}")
+with open("scaler.pkl", "rb") as scaler_file:
+    scaler = pickle.load(scaler_file)
 
 @app.route("/")
 def home():
@@ -50,9 +32,6 @@ def predict():
                 return jsonify({"error": f"Required columns missing. Required columns: {required_columns}"}), 400
 
         input_data = input_data[required_columns]
-
-        print(input_data)
-
         # scale the data
         scaled_data = scaler.transform(input_data)
 
@@ -67,3 +46,6 @@ def predict():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+if __name__=="__main__":
+    app.run(debug=True)
