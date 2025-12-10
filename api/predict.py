@@ -2,16 +2,17 @@ import pickle
 import numpy as np
 import pandas as pd
 from flask import Flask, request, jsonify
+import joblib
 
 app = Flask(__name__)
 
 # Yükleme Kısmı (Dosya adlarının aynı klasörde olduğunu varsayar)
 try:
     with open("diabetes_model.pkl", "rb") as model_file:
-        model = pickle.load(model_file)
+        model = joblib.load(model_file)
 
     with open("scaler.pkl", "rb") as scaler_file:
-        scaler = pickle.load(scaler_file)
+        scaler = joblib.load(scaler_file)
     print("Modeller başarıyla yüklendi.")
 except Exception as e:
     print(f"Model yükleme hatası: {e}")
