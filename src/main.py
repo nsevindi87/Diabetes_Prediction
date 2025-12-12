@@ -32,10 +32,7 @@ def predict():
                 return jsonify({"error": f"Required columns missing. Required columns: {required_columns}"}), 400
 
         input_data = input_data[required_columns]
-        # scale the data
         scaled_data = scaler.transform(input_data)
-
-        # make prediction
         prediction = model.predict(scaled_data)
 
         response = {
